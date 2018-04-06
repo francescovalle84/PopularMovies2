@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name" translatable="false">Popular Movies P2</string>
+    <string name="error_message">An error has occurred. Please try again</string>
+    <string name="sort_popular">Most popular</string>
+    <string name="sort_top_rated">Top rated</string>
+    <string name="error_loading_detail">Error loading detail page. Please try again</string>
+</resources>
