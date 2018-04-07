@@ -1,12 +1,18 @@
 package com.example.android.popularmovies2;
 
+import android.annotation.SuppressLint;
+import android.os.PersistableBundle;
+import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +30,7 @@ import com.example.android.popularmovies2.utilities.OpenMovieJsonUtils;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements ItemClickListener {
+public class MainActivity extends AppCompatActivity implements ItemClickListener, LoaderManager.LoaderCallbacks<ArrayList<Movie>> {
 
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
@@ -32,6 +38,12 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     private TextView mErrorMessageDisplay;
 
     private ProgressBar mLoadingIndicator;
+
+    // A constant to save and restore the sortType
+    private static final String SORT_TYPE_EXTRA = NetworkUtils.SortType.POPULAR.getSortType();
+
+    // Loader constant id
+    private static final int MOVIE_LOADER = 22;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +91,12 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
         /* Once all of our views are setup, we can load the movie data. */
-        loadMovieData(NetworkUtils.SortType.POPULAR);
+        //loadMovieData(NetworkUtils.SortType.POPULAR);
+
+        Bundle movieBundle = new Bundle();
+        movieBundle.putString(SORT_TYPE_EXTRA, NetworkUtils.SortType.POPULAR.getSortType());
+        getSupportLoaderManager().initLoader(MOVIE_LOADER, movieBundle, this);
+
     }
 
     @Override
@@ -141,7 +158,19 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
      */
     private void loadMovieData(NetworkUtils.SortType sortType) {
         showMovieDataView();
-        new FetchMovieTask().execute(sortType.getSortType());
+//        new FetchMovieTask().execute(sortType.getSortType());
+
+        Bundle movieBundle = new Bundle();
+        movieBundle.putString(SORT_TYPE_EXTRA, sortType.getSortType());
+
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<ArrayList<Movie>> movieLoader = loaderManager.getLoader(MOVIE_LOADER);
+
+        if(movieLoader == null) {
+            loaderManager.initLoader(MOVIE_LOADER, movieBundle, this);
+        } else {
+            loaderManager.restartLoader(MOVIE_LOADER, movieBundle, this);
+        }
     }
 
     /**
@@ -172,46 +201,66 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
-    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
+    @Override
+    public Loader<ArrayList<Movie>> onCreateLoader(int i, final Bundle bundle) {
+        return new AsyncTaskLoader<ArrayList<Movie>>(this) {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
+            ArrayList<Movie> mMovies = null;
 
-        @Override
-        protected ArrayList<Movie> doInBackground(String... params) {
+            @Override
+            protected void onStartLoading() {
+                //super.onStartLoading();
+                if(bundle == null) {
+                    return;
+                }
+                mLoadingIndicator.setVisibility(View.VISIBLE);
 
-            /* If there's no sorting type specified, do nothing. */
-            if (params.length == 0) {
-                return null;
+                if(mMovies != null) {
+                    deliverResult(mMovies);
+                } else {
+                    forceLoad();
+                }
             }
 
-            String sortType = params[0];
-            URL movieRequestUrl = NetworkUtils.buildUrl(sortType);
+            @Override
+            public ArrayList<Movie> loadInBackground() {
+                String sortType = bundle.getString(SORT_TYPE_EXTRA);
+                if(sortType == null || TextUtils.isEmpty(sortType)) {
+                    return null;
+                }
 
-            try {
-                String jsonMovieResponse = NetworkUtils
-                        .getResponseFromHttpUrl(movieRequestUrl);
+                URL movieRequestUrl = NetworkUtils.buildUrl(sortType);
 
-                return OpenMovieJsonUtils.getMoviesFromJson(MainActivity.this, jsonMovieResponse);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+                try {
+                    String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
+                    return OpenMovieJsonUtils.getMoviesFromJson(MainActivity.this, jsonMovieResponse);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;    // Why returns null without printing the stack trace?
+                }
             }
-        }
 
-        @Override
-        protected void onPostExecute(ArrayList<Movie> movieData) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (movieData != null) {
-                showMovieDataView();
-                mMovieAdapter.setMovieData(movieData);
-            } else {
-                showErrorMessage();
+            @Override
+            public void deliverResult(ArrayList<Movie> movies) {
+                mMovies = movies;
+                super.deliverResult(movies);
             }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        if (data != null) {
+            showMovieDataView();
+            mMovieAdapter.setMovieData(data);
+        } else {
+            showErrorMessage();
         }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
+
     }
 }
