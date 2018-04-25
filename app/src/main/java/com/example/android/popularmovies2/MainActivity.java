@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.example.android.popularmovies2.adapter.ItemClickListener;
 import com.example.android.popularmovies2.adapter.MovieAdapter;
 import com.example.android.popularmovies2.model.Movie;
+import com.example.android.popularmovies2.services.MovieAsyncTaskLoader;
 import com.example.android.popularmovies2.utilities.NetworkUtils;
 import com.example.android.popularmovies2.utilities.OpenMovieJsonUtils;
 
@@ -203,6 +204,9 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
     @Override
     public Loader<ArrayList<Movie>> onCreateLoader(int i, final Bundle bundle) {
+
+        return new MovieAsyncTaskLoader(this, bundle, mLoadingIndicator, SORT_TYPE_EXTRA);
+        /*
         return new AsyncTaskLoader<ArrayList<Movie>>(this) {
 
             ArrayList<Movie> mMovies = null;
@@ -246,6 +250,8 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                 super.deliverResult(movies);
             }
         };
+
+        */
     }
 
     @Override
@@ -262,5 +268,9 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     @Override
     public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
 
+    }
+
+    public Context getContext() {
+        return this;
     }
 }
