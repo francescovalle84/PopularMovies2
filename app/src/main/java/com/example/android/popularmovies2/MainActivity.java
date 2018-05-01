@@ -2,6 +2,8 @@ package com.example.android.popularmovies2;
 
 import android.annotation.SuppressLint;
 import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.popularmovies2.adapter.ItemClickListener;
 import com.example.android.popularmovies2.adapter.MovieAdapter;
@@ -32,6 +35,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements ItemClickListener, LoaderManager.LoaderCallbacks<ArrayList<Movie>> {
+
+    private BottomNavigationView bottomNavigationView;
 
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
@@ -50,6 +55,29 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /*
+         * Using findViewById, we get a reference to our BottomNavigationView from the xml
+         */
+        bottomNavigationView = findViewById(R.id.bottom_navigation_id);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nb_most_popular:
+                        Toast.makeText(MainActivity.this, "Most popular clicked", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nb_top_rated:
+                        Toast.makeText(MainActivity.this, "Top rated clicked", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nb_favorite:
+                        Toast.makeText(MainActivity.this, "My favorite clicked", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+
+                return true;
+            }
+        });
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
