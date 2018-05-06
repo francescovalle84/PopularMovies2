@@ -63,12 +63,17 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                NetworkUtils.SortType sortType;
                 switch (item.getItemId()) {
                     case R.id.nb_most_popular:
-                        Toast.makeText(MainActivity.this, "Most popular clicked", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "Most popular clicked", Toast.LENGTH_SHORT).show();
+                        sortType = NetworkUtils.SortType.POPULAR;
+                        loadMovieData(sortType);
                         break;
                     case R.id.nb_top_rated:
-                        Toast.makeText(MainActivity.this, "Top rated clicked", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "Top rated clicked", Toast.LENGTH_SHORT).show();
+                        sortType = NetworkUtils.SortType.TOP_RATED;
+                        loadMovieData(sortType);
                         break;
                     case R.id.nb_favorite:
                         Toast.makeText(MainActivity.this, "My favorite clicked", Toast.LENGTH_SHORT).show();
@@ -139,32 +144,6 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         Intent intent = new Intent(this, MovieDetailActivity.class);
         intent.putExtra("movie", mMovieAdapter.getItem(position));
         startActivity(intent);
-    }
-
-    // Create a menu to manage two type of sorting
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    // If one of the menu items is clicked, load again data with the selected type of sorting
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        NetworkUtils.SortType sortType;
-
-        switch (item.getItemId()) {
-            case R.id.sort_popular:
-                sortType = NetworkUtils.SortType.POPULAR;
-                loadMovieData(sortType);
-                return true;
-            case R.id.sort_top_rated:
-                sortType = NetworkUtils.SortType.TOP_RATED;
-                loadMovieData(sortType);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**
