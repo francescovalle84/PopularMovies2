@@ -1,14 +1,18 @@
 package com.example.android.popularmovies2;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies2.data.MoviesContract;
 import com.example.android.popularmovies2.model.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -67,5 +71,33 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         TextView overviewView = findViewById(R.id.tv_overview);
         overviewView.setText(movie.getOverview());
+    }
+
+    /**
+     * Is called when the "Mark as favorite" button is pressed
+     */
+    public void onClickMarkAsFavorite(View view) {
+
+        // Create new empty ContentValues object
+        ContentValues contentValues = new ContentValues();
+
+        // Put movie information into the ContentValues
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("movie")) {
+            Movie movie = intent.getParcelableExtra("movie");
+            Log.d("FILM: ", movie.getTitle());
+            contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_ID, movie.getId());
+            contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_TITLE, movie.getTitle());
+            contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, movie.getPosterPath());
+            contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, movie.getOverview());
+            contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_VOTE_AVERAGE, movie.getVoteAverage());
+            contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, movie.getReleaseDate());
+
+            // Insert new movie data via a ContentResolver
+            Uri uri = getContentResolver().insert(MoviesContract.MovieEntry.CONTENT_URI, contentValues);
+        }
+        else {
+            closeOnError();
+        }
     }
 }

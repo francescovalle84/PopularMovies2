@@ -39,4 +39,6 @@ dependencies {
     // Add libraries for NavigationBottomView
     compile 'com.android.support:design:26.1.0'
     compile 'com.android.support:support-v4:26.1.0'
+    // Add library for Stetho
+    compile 'com.facebook.stetho:stetho:1.5.0'
 }

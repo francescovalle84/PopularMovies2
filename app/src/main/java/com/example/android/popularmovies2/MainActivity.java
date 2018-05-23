@@ -1,23 +1,17 @@
 package com.example.android.popularmovies2;
 
-import android.annotation.SuppressLint;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -28,28 +22,23 @@ import com.example.android.popularmovies2.adapter.ItemClickListener;
 import com.example.android.popularmovies2.adapter.MovieAdapter;
 import com.example.android.popularmovies2.model.Movie;
 import com.example.android.popularmovies2.services.MovieAsyncTaskLoader;
-import com.example.android.popularmovies2.utilities.NetworkUtils;
-import com.example.android.popularmovies2.utilities.OpenMovieJsonUtils;
+import com.example.android.popularmovies2.utilities.SortType;
 
-import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements ItemClickListener, LoaderManager.LoaderCallbacks<ArrayList<Movie>> {
 
-    private BottomNavigationView bottomNavigationView;
+    // Loader constant id
+    private static final int MOVIE_LOADER = 22;
 
+    private BottomNavigationView bottomNavigationView;
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
-
     private TextView mErrorMessageDisplay;
-
     private ProgressBar mLoadingIndicator;
 
     // A constant to save and restore the sortType
-    private static final String SORT_TYPE_EXTRA = NetworkUtils.SortType.POPULAR.getSortType();
-
-    // Loader constant id
-    private static final int MOVIE_LOADER = 22;
+    private String SORT_TYPE_EXTRA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,17 +52,12 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                NetworkUtils.SortType sortType;
                 switch (item.getItemId()) {
                     case R.id.nb_most_popular:
-                        //Toast.makeText(MainActivity.this, "Most popular clicked", Toast.LENGTH_SHORT).show();
-                        sortType = NetworkUtils.SortType.POPULAR;
-                        loadMovieData(sortType);
+                        loadMovieData(SortType.POPULAR);
                         break;
                     case R.id.nb_top_rated:
-                        //Toast.makeText(MainActivity.this, "Top rated clicked", Toast.LENGTH_SHORT).show();
-                        sortType = NetworkUtils.SortType.TOP_RATED;
-                        loadMovieData(sortType);
+                        loadMovieData(SortType.TOP_RATED);
                         break;
                     case R.id.nb_favorite:
                         Toast.makeText(MainActivity.this, "My favorite clicked", Toast.LENGTH_SHORT).show();
@@ -128,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         //loadMovieData(NetworkUtils.SortType.POPULAR);
 
         Bundle movieBundle = new Bundle();
-        movieBundle.putString(SORT_TYPE_EXTRA, NetworkUtils.SortType.POPULAR.getSortType());
+        movieBundle.putString(SORT_TYPE_EXTRA, SortType.POPULAR);
         getSupportLoaderManager().initLoader(MOVIE_LOADER, movieBundle, this);
 
     }
@@ -148,10 +132,10 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
     /**
      * Calculate dynamically the number of posters that is possible to show in a row
-     *
+     * <p>
      * Source: https://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns
      *
-     * @param context the context
+     * @param context         the context
      * @param widthOfGridItem the width of the single item
      * @return the number of columns that it is possible to show in a row
      */
@@ -164,17 +148,16 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     /**
      * Load movie data (in background) with the selected sorting type
      */
-    private void loadMovieData(NetworkUtils.SortType sortType) {
+    private void loadMovieData(String sortType) {
         showMovieDataView();
-//        new FetchMovieTask().execute(sortType.getSortType());
 
         Bundle movieBundle = new Bundle();
-        movieBundle.putString(SORT_TYPE_EXTRA, sortType.getSortType());
+        movieBundle.putString(SORT_TYPE_EXTRA, sortType);
 
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader<ArrayList<Movie>> movieLoader = loaderManager.getLoader(MOVIE_LOADER);
 
-        if(movieLoader == null) {
+        if (movieLoader == null) {
             loaderManager.initLoader(MOVIE_LOADER, movieBundle, this);
         } else {
             loaderManager.restartLoader(MOVIE_LOADER, movieBundle, this);
@@ -184,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     /**
      * This method will make the View for the movie data visible and
      * hide the error message.
-     *
+     * <p>
      * Since it is okay to redundantly set the visibility of a View, we don't
      * need to check whether each view is currently visible or invisible.
      */
@@ -198,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     /**
      * This method will make the error message visible and hide the movie
      * View.
-     *
+     * <p>
      * Since it is okay to redundantly set the visibility of a View, we don't
      * need to check whether each view is currently visible or invisible.
      */
@@ -213,52 +196,6 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     public Loader<ArrayList<Movie>> onCreateLoader(int i, final Bundle bundle) {
 
         return new MovieAsyncTaskLoader(this, bundle, mLoadingIndicator, SORT_TYPE_EXTRA);
-        /*
-        return new AsyncTaskLoader<ArrayList<Movie>>(this) {
-
-            ArrayList<Movie> mMovies = null;
-
-            @Override
-            protected void onStartLoading() {
-                //super.onStartLoading();
-                if(bundle == null) {
-                    return;
-                }
-                mLoadingIndicator.setVisibility(View.VISIBLE);
-
-                if(mMovies != null) {
-                    deliverResult(mMovies);
-                } else {
-                    forceLoad();
-                }
-            }
-
-            @Override
-            public ArrayList<Movie> loadInBackground() {
-                String sortType = bundle.getString(SORT_TYPE_EXTRA);
-                if(sortType == null || TextUtils.isEmpty(sortType)) {
-                    return null;
-                }
-
-                URL movieRequestUrl = NetworkUtils.buildUrl(sortType);
-
-                try {
-                    String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
-                    return OpenMovieJsonUtils.getMoviesFromJson(MainActivity.this, jsonMovieResponse);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;    // Why returns null without printing the stack trace?
-                }
-            }
-
-            @Override
-            public void deliverResult(ArrayList<Movie> movies) {
-                mMovies = movies;
-                super.deliverResult(movies);
-            }
-        };
-
-        */
     }
 
     @Override

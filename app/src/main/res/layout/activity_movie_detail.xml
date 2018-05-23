@@ -38,25 +38,36 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tv_release_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginTop="16dp"
-                    android:textSize="26sp" />
+                    android:textSize="30sp" />
 
                 <TextView
                     android:id="@+id/tv_vote_average"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginTop="16dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp" />
+
+                <ToggleButton
+                    android:id="@+id/simpleToggleButton"
+                    android:layout_width="160dp"
+                    android:layout_height="100dp"
+                    android:textOff="Mark as favorite"
+                    android:textOn="Remove from favorites"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="#000"
+                    android:drawableTop="@drawable/ic_favorite"
+                    android:onClick="onClickMarkAsFavorite"/>
 
             </LinearLayout>
 

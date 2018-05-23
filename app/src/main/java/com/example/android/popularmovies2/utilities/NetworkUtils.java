@@ -17,25 +17,6 @@ import java.util.Scanner;
 
 public class NetworkUtils {
 
-    /**
-     * Used to manage several types of sorting
-     * (for the moment only 'popular' and 'top rated')
-     */
-    public enum SortType {
-        POPULAR ("popular"),
-        TOP_RATED ("top_rated");
-
-        private String sortType;
-
-        SortType (String sortType) {
-            this.sortType = sortType;
-        }
-
-        public String getSortType() {
-            return this.sortType;
-        }
-    }
-
     final static String THEMOVIEDB_BASE_URL = "http://api.themoviedb.org/3/movie";
 
     final static String THEMOVIEDB_API_VALUE = BuildConfig.API_KEY;

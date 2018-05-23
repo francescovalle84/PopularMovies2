@@ -11,6 +11,7 @@ import com.example.android.popularmovies2.MainActivity;
 import com.example.android.popularmovies2.model.Movie;
 import com.example.android.popularmovies2.utilities.NetworkUtils;
 import com.example.android.popularmovies2.utilities.OpenMovieJsonUtils;
+import com.example.android.popularmovies2.utilities.SortType;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,12 +24,12 @@ import java.util.ArrayList;
 
 public class MovieAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Movie>> {
 
-    ArrayList<Movie> mMovies = null;
+    private ArrayList<Movie> mMovies = null;
 
     // Parameters
-    Context context;
-    Bundle bundle;
-    ProgressBar mLoadingIndicator;
+    private Context context;
+    private Bundle bundle;
+    private ProgressBar mLoadingIndicator;
     String sortTypeExtra;
 
     public MovieAsyncTaskLoader(Context context, Bundle bundle, ProgressBar loadingIndicator, String sortTypeExtra) {
@@ -56,6 +57,8 @@ public class MovieAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Movie>> {
 
     @Override
     public ArrayList<Movie> loadInBackground() {
+        // SortType could be only "POPULAR" or "TOP_RATED" here.
+        // See onNavigationItemSelected for BottomNavigationView for "FAVORITE"
         String sortType = bundle.getString(sortTypeExtra);
         if(sortType == null || TextUtils.isEmpty(sortType)) {
             return null;
