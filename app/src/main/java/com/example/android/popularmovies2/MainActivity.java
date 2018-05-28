@@ -25,6 +25,7 @@ import com.example.android.popularmovies2.model.Movie;
 import com.example.android.popularmovies2.services.FavoriteLoader;
 import com.example.android.popularmovies2.services.MovieDBLoader;
 import com.example.android.popularmovies2.utilities.SortType;
+import com.facebook.stetho.Stetho;
 
 import java.util.ArrayList;
 
@@ -46,8 +47,13 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     // A constant to save and restore the sortType
     private String SORT_TYPE_EXTRA;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Initialize Stetho debugger
+        Stetho.initializeWithDefaults(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

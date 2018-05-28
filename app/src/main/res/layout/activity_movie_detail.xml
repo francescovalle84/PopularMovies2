@@ -58,14 +58,10 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp" />
 
-                <ToggleButton
-                    android:id="@+id/simpleToggleButton"
-                    android:layout_width="160dp"
-                    android:layout_height="100dp"
-                    android:textOff="Mark as favorite"
-                    android:textOn="Remove from favorites"
-                    android:layout_centerHorizontal="true"
-                    android:textColor="#000"
+                <Button
+                    android:id="@+id/favoriteButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:drawableTop="@drawable/ic_favorite"
                     android:onClick="onClickMarkAsFavorite"/>
 
