@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                     case R.id.nb_favorite:
                         //Toast.makeText(MainActivity.this, "My favorite clicked", Toast.LENGTH_SHORT).show();
                         //loadMovieData(SortType.FAVORITE);
-                        //TODO: Crea metodo che richiama favoriti
                         loadFavoriteData(SortType.FAVORITE);
                         break;
                 }
@@ -128,12 +127,14 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
         /* Once all of our views are setup, we can load the movie data. */
-        //loadMovieData(NetworkUtils.SortType.POPULAR);
+        loadMovieData(SortType.POPULAR);
+        //loadFavoriteData(SortType.FAVORITE);
 
+        /*
         Bundle movieBundle = new Bundle();
         movieBundle.putString(SORT_TYPE_EXTRA, SortType.POPULAR);
         getSupportLoaderManager().initLoader(MOVIE_DB_LOADER_ID, movieBundle, movieDBLoader);
-
+        */
     }
 
     @Override

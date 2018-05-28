@@ -52,11 +52,15 @@ public class FavoriteAsyncTaskLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public Cursor loadInBackground() {
         try{
-            return context.getContentResolver().query(MoviesContract.MovieEntry.CONTENT_URI,
+            Cursor cursor =  context.getContentResolver().query(MoviesContract.MovieEntry.CONTENT_URI,
                     null,
                     null,
                     null,
                     null);
+
+            int numResults = cursor.getCount();
+
+            return cursor;
         } catch (Exception e){
             Log.e(MainActivity.class.getName(), "Failed to asynchronously load data.");
             e.printStackTrace();

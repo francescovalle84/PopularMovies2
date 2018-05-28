@@ -41,7 +41,7 @@ public class OpenMovieJsonUtils {
             movie.setVoteAverage((float) movieInfo.getDouble("vote_average"));
             movie.setTitle(movieInfo.getString("title"));
             movie.setPopularity((float) movieInfo.getDouble("popularity"));
-            movie.setPosterPath(movieInfo.getString("poster_path"));
+            movie.setPosterPath("http://image.tmdb.org/t/p/w185/" + movieInfo.getString("poster_path"));
             movie.setOriginalLanguage(movieInfo.getString("original_language"));
             movie.setOriginalTitle(movieInfo.getString("original_title"));
             List<Integer> genreIds = new ArrayList<>();

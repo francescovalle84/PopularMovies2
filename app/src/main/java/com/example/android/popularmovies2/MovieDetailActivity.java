@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -65,7 +66,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private void populateUI(Movie movie, long id) {
 
         TextView titleView = findViewById(R.id.tv_movie_title);
-        titleView.setText(movie.getOriginalTitle());
+        titleView.setText(movie.getTitle());
 
         ImageView posterView = findViewById(R.id.iv_movie_poster_detail);
         Picasso

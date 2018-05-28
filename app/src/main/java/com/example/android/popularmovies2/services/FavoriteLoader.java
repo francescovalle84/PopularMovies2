@@ -34,7 +34,8 @@ public class FavoriteLoader implements LoaderManager.LoaderCallbacks<Cursor> {
         mainActivity.getLoadingIndicator().setVisibility(View.INVISIBLE);
         if (data != null) {
             mainActivity.showMovieDataView();
-            mainActivity.getMovieAdapter().setMovieData(cursorToArrayList((data)));
+            ArrayList<Movie> moviesArrayList = cursorToArrayList((data));
+            mainActivity.getMovieAdapter().setMovieData(moviesArrayList);
         } else {
             mainActivity.showErrorMessage();
         }
