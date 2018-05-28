@@ -1,5 +1,6 @@
 package com.example.android.popularmovies2;
 
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.LoaderManager;
@@ -21,15 +22,20 @@ import android.widget.Toast;
 import com.example.android.popularmovies2.adapter.ItemClickListener;
 import com.example.android.popularmovies2.adapter.MovieAdapter;
 import com.example.android.popularmovies2.model.Movie;
-import com.example.android.popularmovies2.services.MovieAsyncTaskLoader;
+import com.example.android.popularmovies2.services.FavoriteLoader;
+import com.example.android.popularmovies2.services.MovieDBLoader;
 import com.example.android.popularmovies2.utilities.SortType;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements ItemClickListener, LoaderManager.LoaderCallbacks<ArrayList<Movie>> {
+public class MainActivity extends AppCompatActivity implements ItemClickListener {
 
     // Loader constant id
-    private static final int MOVIE_LOADER = 22;
+    private static final int MOVIE_DB_LOADER_ID = 22;
+    private static final int FAVORITE_LOADER_ID = 23;
+
+    private LoaderManager.LoaderCallbacks<ArrayList<Movie>> movieDBLoader;
+    private LoaderManager.LoaderCallbacks<Cursor> favoriteLoader;
 
     private BottomNavigationView bottomNavigationView;
     private RecyclerView mRecyclerView;
@@ -44,6 +50,10 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Configure loaders
+        movieDBLoader = new MovieDBLoader(this);
+        favoriteLoader = new FavoriteLoader(this);
 
         /*
          * Using findViewById, we get a reference to our BottomNavigationView from the xml
@@ -60,7 +70,10 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                         loadMovieData(SortType.TOP_RATED);
                         break;
                     case R.id.nb_favorite:
-                        Toast.makeText(MainActivity.this, "My favorite clicked", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "My favorite clicked", Toast.LENGTH_SHORT).show();
+                        //loadMovieData(SortType.FAVORITE);
+                        //TODO: Crea metodo che richiama favoriti
+                        loadFavoriteData(SortType.FAVORITE);
                         break;
                 }
 
@@ -113,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
         Bundle movieBundle = new Bundle();
         movieBundle.putString(SORT_TYPE_EXTRA, SortType.POPULAR);
-        getSupportLoaderManager().initLoader(MOVIE_LOADER, movieBundle, this);
+        getSupportLoaderManager().initLoader(MOVIE_DB_LOADER_ID, movieBundle, movieDBLoader);
 
     }
 
@@ -155,13 +168,24 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         movieBundle.putString(SORT_TYPE_EXTRA, sortType);
 
         LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<ArrayList<Movie>> movieLoader = loaderManager.getLoader(MOVIE_LOADER);
+        Loader<ArrayList<Movie>> movieLoader = loaderManager.getLoader(MOVIE_DB_LOADER_ID);
 
         if (movieLoader == null) {
-            loaderManager.initLoader(MOVIE_LOADER, movieBundle, this);
+            loaderManager.initLoader(MOVIE_DB_LOADER_ID, movieBundle, movieDBLoader);
         } else {
-            loaderManager.restartLoader(MOVIE_LOADER, movieBundle, this);
+            loaderManager.restartLoader(MOVIE_DB_LOADER_ID, movieBundle, movieDBLoader);
         }
+    }
+
+    private void loadFavoriteData(String sortType) {
+        showMovieDataView();
+
+        Bundle movieBundle = new Bundle();
+        movieBundle.putString(SORT_TYPE_EXTRA, sortType);
+
+        LoaderManager loaderManager = getSupportLoaderManager();
+        loaderManager.initLoader(FAVORITE_LOADER_ID, movieBundle, favoriteLoader);
+
     }
 
     /**
@@ -171,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
      * Since it is okay to redundantly set the visibility of a View, we don't
      * need to check whether each view is currently visible or invisible.
      */
-    private void showMovieDataView() {
+    public void showMovieDataView() {
         /* First, make sure the error is invisible */
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         /* Then, make sure the movie data is visible */
@@ -185,36 +209,26 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
      * Since it is okay to redundantly set the visibility of a View, we don't
      * need to check whether each view is currently visible or invisible.
      */
-    private void showErrorMessage() {
+    public void showErrorMessage() {
         /* First, hide the currently visible data */
         mRecyclerView.setVisibility(View.INVISIBLE);
         /* Then, show the error */
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public Loader<ArrayList<Movie>> onCreateLoader(int i, final Bundle bundle) {
-
-        return new MovieAsyncTaskLoader(this, bundle, mLoadingIndicator, SORT_TYPE_EXTRA);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
-        mLoadingIndicator.setVisibility(View.INVISIBLE);
-        if (data != null) {
-            showMovieDataView();
-            mMovieAdapter.setMovieData(data);
-        } else {
-            showErrorMessage();
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
-
-    }
-
     public Context getContext() {
         return this;
+    }
+
+    public MovieAdapter getMovieAdapter() {
+        return mMovieAdapter;
+    }
+
+    public ProgressBar getLoadingIndicator() {
+        return mLoadingIndicator;
+    }
+
+    public String getSortTypeExtra() {
+        return SORT_TYPE_EXTRA;
     }
 }

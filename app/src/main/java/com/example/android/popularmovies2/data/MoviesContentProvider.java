@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by franc on 21/05/2018.
@@ -112,6 +113,8 @@ public class MoviesContentProvider extends ContentProvider {
         }
 
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+        Log.i("TAG", "RISULTATI IN DB: " + String.valueOf(retCursor.getCount()));
 
         return retCursor;
     }

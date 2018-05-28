@@ -1,6 +1,7 @@
 package com.example.android.popularmovies2.services;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
 import android.text.TextUtils;
