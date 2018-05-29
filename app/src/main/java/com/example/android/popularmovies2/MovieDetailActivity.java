@@ -169,11 +169,4 @@ public class MovieDetailActivity extends AppCompatActivity {
         getContentResolver().delete(uri, null, null);
     }
 
-    public long getMovieId() {
-        return movieId;
-    }
-
-    public void setMovieId(long id) {
-        movieId = id;
-    }
 }

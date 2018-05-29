@@ -73,4 +73,5 @@ public class FavoriteAsyncTaskLoader extends AsyncTaskLoader<Cursor> {
         mMovies = movies;
         super.deliverResult(movies);
     }
+
 }

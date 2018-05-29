@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     // A constant to save and restore the sortType
     private String SORT_TYPE_EXTRA;
 
-
+    private String selectedSort;
+    private int selectionItemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,14 +128,44 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
         /* Once all of our views are setup, we can load the movie data. */
-        loadMovieData(SortType.POPULAR);
-        //loadFavoriteData(SortType.FAVORITE);
+        if(savedInstanceState != null) {
+            //mStateBundle = savedInstanceState;
+            String selectedSort = savedInstanceState.getString("SELECTION_SORT");
+            if(selectedSort.equals(SortType.POPULAR)) {
+                selectedSort = SortType.POPULAR;
+                loadMovieData(SortType.POPULAR);
+            } else if(selectedSort.equals(SortType.TOP_RATED)) {
+                selectedSort = SortType.TOP_RATED;
+                loadMovieData(SortType.TOP_RATED);
+            } else {
+                selectedSort = SortType.FAVORITE;
+                loadFavoriteData(SortType.FAVORITE);
+            }
+        } else {
+            selectedSort = SortType.POPULAR;
+            loadMovieData(SortType.POPULAR);
+        }
 
         /*
         Bundle movieBundle = new Bundle();
         movieBundle.putString(SORT_TYPE_EXTRA, SortType.POPULAR);
         getSupportLoaderManager().initLoader(MOVIE_DB_LOADER_ID, movieBundle, movieDBLoader);
         */
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("SELECTION_SORT", selectedSort);
+        outState.putInt("SELECTION_ITEM_ID", selectionItemId);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        selectedSort = savedInstanceState.getString("SELECTION_SORT");
+        selectionItemId = savedInstanceState.getInt("SELECTION_ITEM_ID");
+        bottomNavigationView.setSelectedItemId(selectionItemId);
     }
 
     @Override
@@ -238,4 +269,5 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     public String getSortTypeExtra() {
         return SORT_TYPE_EXTRA;
     }
+
 }
