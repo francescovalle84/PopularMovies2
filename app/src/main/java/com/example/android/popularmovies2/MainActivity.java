@@ -130,19 +130,15 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         /* Once all of our views are setup, we can load the movie data. */
         if(savedInstanceState != null) {
             //mStateBundle = savedInstanceState;
-            String selectedSort = savedInstanceState.getString("SELECTION_SORT");
+            selectedSort = savedInstanceState.getString("SELECTION_SORT");
             if(selectedSort.equals(SortType.POPULAR)) {
-                selectedSort = SortType.POPULAR;
                 loadMovieData(SortType.POPULAR);
             } else if(selectedSort.equals(SortType.TOP_RATED)) {
-                selectedSort = SortType.TOP_RATED;
                 loadMovieData(SortType.TOP_RATED);
             } else {
-                selectedSort = SortType.FAVORITE;
                 loadFavoriteData(SortType.FAVORITE);
             }
         } else {
-            selectedSort = SortType.POPULAR;
             loadMovieData(SortType.POPULAR);
         }
 
@@ -158,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         super.onSaveInstanceState(outState);
         outState.putString("SELECTION_SORT", selectedSort);
         outState.putInt("SELECTION_ITEM_ID", selectionItemId);
+        //outState.putParcelableArrayList("MOVIES", movies);
     }
 
     @Override
@@ -166,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         selectedSort = savedInstanceState.getString("SELECTION_SORT");
         selectionItemId = savedInstanceState.getInt("SELECTION_ITEM_ID");
         bottomNavigationView.setSelectedItemId(selectionItemId);
+        //movies = savedInstanceState.getParcelableArrayList("MOVIES");
     }
 
     @Override
@@ -200,6 +198,10 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
      * Load movie data (in background) with the selected sorting type
      */
     private void loadMovieData(String sortType) {
+
+        // Setup selectedSort
+        selectedSort = sortType;
+
         showMovieDataView();
 
         Bundle movieBundle = new Bundle();
@@ -216,13 +218,24 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     }
 
     private void loadFavoriteData(String sortType) {
+
+        // Setup selectedSort
+        selectedSort = sortType;
+
         showMovieDataView();
 
         Bundle movieBundle = new Bundle();
         movieBundle.putString(SORT_TYPE_EXTRA, sortType);
 
         LoaderManager loaderManager = getSupportLoaderManager();
-        loaderManager.initLoader(FAVORITE_LOADER_ID, movieBundle, favoriteLoader);
+        Loader favLoader = loaderManager.getLoader(FAVORITE_LOADER_ID);
+
+        if(favLoader == null) {
+            loaderManager.initLoader(FAVORITE_LOADER_ID, movieBundle, favoriteLoader);
+        } else {
+            loaderManager.restartLoader(FAVORITE_LOADER_ID, movieBundle, favoriteLoader);
+        }
+
 
     }
 
