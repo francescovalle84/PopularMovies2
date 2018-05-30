@@ -1,6 +1,7 @@
 package com.example.android.popularmovies2;
 
 import android.database.Cursor;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.LoaderManager;
@@ -45,10 +46,11 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     private ProgressBar mLoadingIndicator;
 
     // A constant to save and restore the sortType
-    private String SORT_TYPE_EXTRA;
+    private String SORT_TYPE_EXTRA = "sort_type_extra";
 
     private String selectedSort;
     private int selectionItemId;
+    private Parcelable listState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         /* Once all of our views are setup, we can load the movie data. */
         if(savedInstanceState != null) {
             //mStateBundle = savedInstanceState;
+            //listState = savedInstanceState.getParcelable("ListState");
+
             selectedSort = savedInstanceState.getString("SELECTION_SORT");
             if(selectedSort.equals(SortType.POPULAR)) {
                 loadMovieData(SortType.POPULAR);
@@ -142,6 +146,8 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
             loadMovieData(SortType.POPULAR);
         }
 
+
+
         /*
         Bundle movieBundle = new Bundle();
         movieBundle.putString(SORT_TYPE_EXTRA, SortType.POPULAR);
@@ -149,12 +155,18 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         */
     }
 
+    public void restoreLayoutManagerPosition() {
+        if(listState != null) {
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
+        }
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("SELECTION_SORT", selectedSort);
         outState.putInt("SELECTION_ITEM_ID", selectionItemId);
-        //outState.putParcelableArrayList("MOVIES", movies);
+        outState.putParcelable("ListState", mRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
     @Override
@@ -163,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         selectedSort = savedInstanceState.getString("SELECTION_SORT");
         selectionItemId = savedInstanceState.getInt("SELECTION_ITEM_ID");
         bottomNavigationView.setSelectedItemId(selectionItemId);
-        //movies = savedInstanceState.getParcelableArrayList("MOVIES");
+        listState = savedInstanceState.getParcelable("ListState");
     }
 
     @Override
@@ -281,6 +293,10 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
     public String getSortTypeExtra() {
         return SORT_TYPE_EXTRA;
+    }
+
+    public RecyclerView getRecyclerView() {
+        return mRecyclerView;
     }
 
 }

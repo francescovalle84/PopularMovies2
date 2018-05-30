@@ -36,6 +36,7 @@ public class FavoriteLoader implements LoaderManager.LoaderCallbacks<Cursor> {
             mainActivity.showMovieDataView();
             ArrayList<Movie> moviesArrayList = cursorToArrayList((data));
             mainActivity.getMovieAdapter().setMovieData(moviesArrayList);
+            mainActivity.restoreLayoutManagerPosition();
         } else {
             mainActivity.showErrorMessage();
         }

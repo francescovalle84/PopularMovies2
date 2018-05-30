@@ -29,10 +29,12 @@ public class MovieDBLoader implements LoaderManager.LoaderCallbacks<ArrayList<Mo
 
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
+
         mainActivity.getLoadingIndicator().setVisibility(View.INVISIBLE);
         if (data != null) {
             mainActivity.showMovieDataView();
             mainActivity.getMovieAdapter().setMovieData(data);
+            mainActivity.restoreLayoutManagerPosition();
 
         } else {
             mainActivity.showErrorMessage();
