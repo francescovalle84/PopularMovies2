@@ -3,11 +3,14 @@ package com.example.android.popularmovies2;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.v4.app.NavUtils;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,16 +18,39 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies2.adapter.ReviewAdapter;
+import com.example.android.popularmovies2.adapter.TrailerAdapter;
 import com.example.android.popularmovies2.data.MoviesContract;
 import com.example.android.popularmovies2.model.Movie;
+import com.example.android.popularmovies2.model.Review;
+import com.example.android.popularmovies2.model.Trailer;
+import com.example.android.popularmovies2.utilities.NetworkUtils;
+import com.example.android.popularmovies2.utilities.OpenReviewJsonUtils;
+import com.example.android.popularmovies2.utilities.OpenTrailerJsonUtils;
 import com.squareup.picasso.Picasso;
 
-public class MovieDetailActivity extends AppCompatActivity {
+import java.net.URL;
+import java.util.List;
+
+public class MovieDetailActivity extends AppCompatActivity implements TrailerAdapter.ItemClickListener {
 
     // Keep track if movie is in favorite list or not
-    private long movieId;
+    private int movieId;
 
     private Button favoriteButton;
+    private RecyclerView mTrailerRecyclerView;
+    private RecyclerView mReviewRecyclerView;
+
+    private TrailerAdapter trailerAdapter;
+    private TextView mTrailerEmptyTextView;
+    private ReviewAdapter reviewAdapter;
+    private TextView mReviewEmptyTextView;
+    Movie selectedMovie = null;
+
+    long movieDbId;
+    private static final int DETAILS_LOADER_ID = 10;
+
+    SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +89,7 @@ public class MovieDetailActivity extends AppCompatActivity {
      * Populate the UI of the detail activity
      * @param movie the movie
      */
-    private void populateUI(Movie movie, long id) {
+    private void populateUI(Movie movie, int id) {
 
         TextView titleView = findViewById(R.id.tv_movie_title);
         titleView.setText(movie.getTitle());
@@ -92,6 +118,94 @@ public class MovieDetailActivity extends AppCompatActivity {
         } else {
             favoriteButton.setText("Add");
         }
+
+        mTrailerRecyclerView = findViewById(R.id.rv_trailers);
+        mTrailerRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mTrailerEmptyTextView = findViewById(R.id.trailer_empty_tv);
+
+        mReviewRecyclerView = findViewById(R.id.rv_reviews);
+        mReviewRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mReviewEmptyTextView = findViewById(R.id.review_empty_tv);
+
+        // Load trailers and reviews with AsyncTasks
+        URL trailersUrl = NetworkUtils.buildTrailersURL(movie.getId());
+        URL reviewsUrl = NetworkUtils.buildReviewsURL(movie.getId());
+
+        new TrailersAsyncTask().execute(trailersUrl);
+        new ReviewsAsyncTask().execute(reviewsUrl);
+    }
+
+    public class ReviewsAsyncTask extends AsyncTask<URL, Void, List<Review>> {
+
+        @Override
+        protected List<Review> doInBackground(URL... urls) {
+
+            URL url = urls[0];
+
+            List<Review> reviews;
+
+            try {
+                String jsonReviewResponse = NetworkUtils.getResponseFromHttpUrl(url);
+                return OpenReviewJsonUtils.getReviewsFromJson(jsonReviewResponse);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Review> reviews) {
+            if(reviews != null && !reviews.isEmpty()){
+                reviewAdapter = new ReviewAdapter(getApplicationContext(), reviews);
+                mReviewRecyclerView.setAdapter(reviewAdapter);
+                mReviewEmptyTextView.setVisibility(View.GONE);
+
+            } else {
+                mReviewEmptyTextView.setText("No review found");
+            }
+        }
+    }
+
+    public class TrailersAsyncTask extends AsyncTask<URL, Void, List<Trailer>> {
+
+        @Override
+        protected List<Trailer> doInBackground(URL... urls) {
+
+            URL url = urls[0];
+
+            List<Trailer> trailers;
+
+            try {
+                String jsonTrailerResponse = NetworkUtils.getResponseFromHttpUrl(url);
+                return OpenTrailerJsonUtils.getTrailersFromJson(jsonTrailerResponse);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Trailer> trailers) {
+            if(trailers != null & !trailers.isEmpty()){
+                trailerAdapter = new TrailerAdapter(getApplicationContext(), trailers);
+                mTrailerRecyclerView.setAdapter(trailerAdapter);
+                mTrailerEmptyTextView.setVisibility(View.GONE);
+                trailerAdapter.setClickListener(MovieDetailActivity.this);
+
+            } else {
+                mTrailerEmptyTextView.setText("No trailer found");
+            }
+        }
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Trailer selectedTrailer = trailerAdapter.getItem(position);
+
+        Intent youtubeIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(selectedTrailer.getTrailerPath()));
+        startActivity(youtubeIntent);
     }
 
     /**
@@ -122,7 +236,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
     }
 
-    private long searchInFavorities(Movie movie) {
+    private int searchInFavorities(Movie movie) {
 
         String[] whereIs = {Integer.toString(movie.getId())};
         try {
@@ -144,7 +258,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     // Add movie to favorities
-    private long addNewMovie(Movie movie){
+    private int addNewMovie(Movie movie){
         ContentValues cv = new ContentValues();
 
         cv.put(MoviesContract.MovieEntry.COLUMN_MOVIE_ID, movie.getId());
@@ -157,7 +271,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         Uri uri = getContentResolver().insert(MoviesContract.MovieEntry.CONTENT_URI, cv);
         String id = uri.getPathSegments().get(1);
 
-        return Long.parseLong(id);
+        return Integer.parseInt(id);
     }
 
     // Remove movie from favorities

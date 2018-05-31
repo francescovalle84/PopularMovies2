@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.popularmovies2.adapter.ItemClickListener;
 import com.example.android.popularmovies2.adapter.MovieAdapter;
@@ -131,8 +130,6 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
         /* Once all of our views are setup, we can load the movie data. */
         if(savedInstanceState != null) {
-            //mStateBundle = savedInstanceState;
-            //listState = savedInstanceState.getParcelable("ListState");
 
             selectedSort = savedInstanceState.getString("SELECTION_SORT");
             if(selectedSort.equals(SortType.POPULAR)) {
@@ -145,14 +142,6 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         } else {
             loadMovieData(SortType.POPULAR);
         }
-
-
-
-        /*
-        Bundle movieBundle = new Bundle();
-        movieBundle.putString(SORT_TYPE_EXTRA, SortType.POPULAR);
-        getSupportLoaderManager().initLoader(MOVIE_DB_LOADER_ID, movieBundle, movieDBLoader);
-        */
     }
 
     public void restoreLayoutManagerPosition() {

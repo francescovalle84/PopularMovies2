@@ -1,6 +1,5 @@
 package com.example.android.popularmovies2.services;
 
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;

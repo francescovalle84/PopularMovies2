@@ -2,7 +2,6 @@ package com.example.android.popularmovies2.services;
 
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.view.View;
 
 import com.example.android.popularmovies2.MainActivity;

@@ -1,6 +1,7 @@
 package com.example.android.popularmovies2.utilities;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.example.android.popularmovies2.BuildConfig;
 
@@ -18,6 +19,10 @@ import java.util.Scanner;
 public class NetworkUtils {
 
     final static String THEMOVIEDB_BASE_URL = "http://api.themoviedb.org/3/movie";
+
+    private static final String PATH_VIDEOS = "videos";
+    private static final String PATH_REVIEWS = "reviews";
+    private static final String PARAM_API_KEY = "api_key";
 
     final static String THEMOVIEDB_API_VALUE = BuildConfig.API_KEY;
 
@@ -67,5 +72,36 @@ public class NetworkUtils {
         } finally {
             urlConnection.disconnect();
         }
+    }
+
+    public static URL buildTrailersURL(int movieId){
+        Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL).buildUpon()
+                .appendPath(Integer.toString(movieId))
+                .appendPath(PATH_VIDEOS)
+                .appendQueryParameter(PARAM_API_KEY, THEMOVIEDB_API_VALUE)
+                .build();
+
+        return uriToUrl(builtUri);
+    }
+
+    public static URL buildReviewsURL(int movieId){
+        Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL).buildUpon()
+                .appendPath(Integer.toString(movieId))
+                .appendPath(PATH_REVIEWS)
+                .appendQueryParameter(PARAM_API_KEY, THEMOVIEDB_API_VALUE)
+                .build();
+
+        return uriToUrl(builtUri);
+    }
+
+    private static URL uriToUrl(Uri builtUri){
+        URL url = null;
+        try{
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e){
+            Log.e(NetworkUtils.class.getName(), "Malformed URL: " + url);
+        }
+
+        return url;
     }
 }

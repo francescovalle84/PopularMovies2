@@ -1,6 +1,5 @@
 package com.example.android.popularmovies2.utilities;
 
-import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
 
 import java.lang.annotation.Retention;

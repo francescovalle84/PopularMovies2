@@ -70,10 +70,77 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/details_overview_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Overview:"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:paddingTop="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp" />
+
+        <TextView
             android:id="@+id/tv_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
+
+        <TextView
+            android:id="@+id/tv_trailers_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trailers:"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:paddingTop="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_trailers"
+            android:layout_width="match_parent"
+            android:layout_height="160dp" />
+
+        <TextView
+            android:id="@+id/trailer_empty_tv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:textColor="@android:color/black"
+            android:gravity="center"
+            />
+
+        <TextView
+            android:id="@+id/details_reviews_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reviews:"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:paddingTop="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_reviews"
+            android:layout_width="match_parent"
+            android:layout_height="160dp" />
+
+        <TextView
+            android:id="@+id/review_empty_tv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:textColor="@android:color/black"
+            android:gravity="center"
+            />
 
     </LinearLayout>
 </ScrollView>

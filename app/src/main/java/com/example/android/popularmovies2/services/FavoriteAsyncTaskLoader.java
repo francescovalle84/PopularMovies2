@@ -10,9 +10,6 @@ import android.widget.ProgressBar;
 
 import com.example.android.popularmovies2.MainActivity;
 import com.example.android.popularmovies2.data.MoviesContract;
-import com.example.android.popularmovies2.model.Movie;
-
-import java.util.ArrayList;
 
 /**
  * Created by franc on 27/05/2018.

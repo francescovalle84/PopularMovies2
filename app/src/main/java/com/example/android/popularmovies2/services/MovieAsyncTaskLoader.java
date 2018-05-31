@@ -1,18 +1,15 @@
 package com.example.android.popularmovies2.services;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.example.android.popularmovies2.MainActivity;
 import com.example.android.popularmovies2.model.Movie;
 import com.example.android.popularmovies2.utilities.NetworkUtils;
 import com.example.android.popularmovies2.utilities.OpenMovieJsonUtils;
-import com.example.android.popularmovies2.utilities.SortType;
 
 import java.net.URL;
 import java.util.ArrayList;
