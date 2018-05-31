@@ -4,4 +4,13 @@
     <string name="sort_popular">Most popular</string>
     <string name="sort_top_rated">Top rated</string>
     <string name="error_loading_detail">Error loading detail page. Please try again</string>
+    <string name="details_title">Movie details</string>
+    <string name="favorite_add">Add</string>
+    <string name="favorite_remove">Remove</string>
+    <string name="no_review_found">No review found!</string>
+    <string name="no_trailer_found">No trailer found!</string>
+    <string name="overview_label">Overview:</string>
+    <string name="trailers_label">Trailers:</string>
+    <string name="reviews_label">Reviews:</string>
+    <string name="loading_content">Loading...</string>
 </resources>

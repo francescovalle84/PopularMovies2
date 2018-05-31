@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context="com.example.android.popularmovies1.MovieDetailActivity">
+        tools:context="com.example.android.popularmovies2.MovieDetailActivity">
 
         <TextView
             android:id="@+id/tv_movie_title"
@@ -73,7 +73,7 @@
             android:id="@+id/details_overview_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Overview:"
+            android:text="@string/overview_label"
             android:textStyle="bold"
             android:textSize="20sp"
             android:paddingTop="8dp"
@@ -92,7 +92,7 @@
             android:id="@+id/tv_trailers_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Trailers:"
+            android:text="@string/trailers_label"
             android:textStyle="bold"
             android:textSize="20sp"
             android:paddingTop="8dp"
@@ -110,16 +110,15 @@
             android:id="@+id/trailer_empty_tv"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Loading..."
+            android:text="@string/loading_content"
             android:textColor="@android:color/black"
-            android:gravity="center"
-            />
+            android:gravity="center" />
 
         <TextView
             android:id="@+id/details_reviews_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reviews:"
+            android:text="@string/reviews_label"
             android:textStyle="bold"
             android:textSize="20sp"
             android:paddingTop="8dp"
@@ -137,10 +136,9 @@
             android:id="@+id/review_empty_tv"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Loading..."
+            android:text="@string/loading_content"
             android:textColor="@android:color/black"
-            android:gravity="center"
-            />
+            android:gravity="center" />
 
     </LinearLayout>
 </ScrollView>

@@ -45,7 +45,12 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     private ProgressBar mLoadingIndicator;
 
     // A constant to save and restore the sortType
-    private String SORT_TYPE_EXTRA = "sort_type_extra";
+    private final String SORT_TYPE_EXTRA = "sort_type_extra";
+    private final String MOVIE_EXTRA = "movie";
+
+    private final String SELECTED_SORT = "SELECTED_SORT";
+    private final String SELECTED_ITEM_ID = "SELECTED_ITEM_ID";
+    private final String LIST_STATE = "LIST_STATE";
 
     private String selectedSort;
     private int selectionItemId;
@@ -131,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         /* Once all of our views are setup, we can load the movie data. */
         if(savedInstanceState != null) {
 
-            selectedSort = savedInstanceState.getString("SELECTION_SORT");
+            selectedSort = savedInstanceState.getString(SELECTED_SORT);
             if(selectedSort.equals(SortType.POPULAR)) {
                 loadMovieData(SortType.POPULAR);
             } else if(selectedSort.equals(SortType.TOP_RATED)) {
@@ -153,18 +158,27 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("SELECTION_SORT", selectedSort);
-        outState.putInt("SELECTION_ITEM_ID", selectionItemId);
-        outState.putParcelable("ListState", mRecyclerView.getLayoutManager().onSaveInstanceState());
+        outState.putString(SELECTED_SORT, selectedSort);
+        outState.putInt(SELECTED_ITEM_ID, selectionItemId);
+        outState.putParcelable(LIST_STATE, mRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        selectedSort = savedInstanceState.getString("SELECTION_SORT");
-        selectionItemId = savedInstanceState.getInt("SELECTION_ITEM_ID");
+        selectedSort = savedInstanceState.getString(SELECTED_SORT);
+        selectionItemId = savedInstanceState.getInt(SELECTED_ITEM_ID);
         bottomNavigationView.setSelectedItemId(selectionItemId);
-        listState = savedInstanceState.getParcelable("ListState");
+        listState = savedInstanceState.getParcelable(LIST_STATE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(listState != null) {
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
+        }
     }
 
     @Override
@@ -176,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
     private void launchMovieDetailActivity(int position) {
         Intent intent = new Intent(this, MovieDetailActivity.class);
-        intent.putExtra("movie", mMovieAdapter.getItem(position));
+        intent.putExtra(MOVIE_EXTRA, mMovieAdapter.getItem(position));
         startActivity(intent);
     }
 

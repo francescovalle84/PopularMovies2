@@ -34,6 +34,8 @@ import java.util.List;
 
 public class MovieDetailActivity extends AppCompatActivity implements TrailerAdapter.ItemClickListener {
 
+    private final String MOVIE_EXTRA = "movie";
+
     // Keep track if movie is in favorite list or not
     private int movieId;
 
@@ -57,7 +59,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        setTitle("Movie details");
+        setTitle(R.string.details_title);
         ActionBar actionBar = this.getSupportActionBar();
 
         // Set the action bar back button to look like an up button
@@ -66,9 +68,9 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAda
         }
 
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("movie")) {
-            Movie movie = intent.getParcelableExtra("movie");
-            Log.d("FILM: ", movie.getTitle());
+        if (intent != null && intent.hasExtra(MOVIE_EXTRA)) {
+            Movie movie = intent.getParcelableExtra(MOVIE_EXTRA);
+            Log.d("MOVIE: ", movie.getTitle());
 
             // Update movieId
             movieId = searchInFavorities(movie);
@@ -113,10 +115,10 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAda
         favoriteButton = findViewById(R.id.favoriteButton);
         // If movie is already in favorities
         if(id != -1) {
-            favoriteButton.setText("Remove");
+            favoriteButton.setText(R.string.favorite_remove);
 
         } else {
-            favoriteButton.setText("Add");
+            favoriteButton.setText(R.string.favorite_add);
         }
 
         mTrailerRecyclerView = findViewById(R.id.rv_trailers);
@@ -161,7 +163,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAda
                 mReviewEmptyTextView.setVisibility(View.GONE);
 
             } else {
-                mReviewEmptyTextView.setText("No review found");
+                mReviewEmptyTextView.setText(R.string.no_review_found);
             }
         }
     }
@@ -194,7 +196,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAda
                 trailerAdapter.setClickListener(MovieDetailActivity.this);
 
             } else {
-                mTrailerEmptyTextView.setText("No trailer found");
+                mTrailerEmptyTextView.setText(R.string.no_trailer_found);
             }
         }
     }
@@ -218,17 +220,17 @@ public class MovieDetailActivity extends AppCompatActivity implements TrailerAda
 
         // Put movie information into the ContentValues
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("movie")) {
-            Movie movie = intent.getParcelableExtra("movie");
+        if (intent != null && intent.hasExtra(MOVIE_EXTRA)) {
+            Movie movie = intent.getParcelableExtra(MOVIE_EXTRA);
             Log.d("FILM: ", movie.getTitle());
             // If movie is already in favorities
             if(movieId != -1) {
                 removeMovie(movieId);
                 movieId = -1;
-                favoriteButton.setText("Add");
+                favoriteButton.setText(R.string.favorite_add);
             } else {
                 movieId = addNewMovie(movie);
-                favoriteButton.setText("Remove");
+                favoriteButton.setText(R.string.favorite_remove);
             }
         }
         else {

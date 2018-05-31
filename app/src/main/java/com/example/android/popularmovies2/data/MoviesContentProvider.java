@@ -114,7 +114,7 @@ public class MoviesContentProvider extends ContentProvider {
 
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
 
-        Log.i("TAG", "RISULTATI IN DB: " + String.valueOf(retCursor.getCount()));
+        Log.i("TAG", "Records in DB: " + String.valueOf(retCursor.getCount()));
 
         return retCursor;
     }
@@ -136,7 +136,6 @@ public class MoviesContentProvider extends ContentProvider {
         int tasksDeleted = 0;
 
         // Delete a single row of data
-        // [Hint] Use selections to delete an item by its row ID
         switch (match) {
             // Handle the single item case, recognized by the ID included in the URI path
             case MOVIES_WITH_ID:

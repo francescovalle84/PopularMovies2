@@ -31,7 +31,6 @@ public class OpenReviewJsonUtils {
                     if (!review.getString("author").equals("")) {
                         user = review.getString("author");
                     }
-
                 }
 
                 String content = "N/A";
@@ -39,7 +38,6 @@ public class OpenReviewJsonUtils {
                     if (!review.getString("content").equals("")) {
                         content = review.getString("content");
                     }
-
                 }
                 reviews.add(new Review(user, content));
             }

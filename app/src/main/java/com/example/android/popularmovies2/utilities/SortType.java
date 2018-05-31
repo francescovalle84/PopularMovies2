@@ -1,6 +1,7 @@
 package com.example.android.popularmovies2.utilities;
 
 import android.support.annotation.StringDef;
+import android.util.Log;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,7 +19,7 @@ public class SortType {
     public static final String FAVORITE = "favorite";
 
     public SortType(@Season int sortType) {
-        System.out.println("Sort type:" + sortType);
+        Log.d(SortType.class.getSimpleName(), "Sort type:" + sortType);
     }
 
     @StringDef({POPULAR, TOP_RATED, FAVORITE})
